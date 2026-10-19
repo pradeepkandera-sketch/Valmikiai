@@ -22,7 +22,7 @@ const limiter = rateLimit({
 });
 
 const apiKey = process.env.GEMINI_API_KEY;
-const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+const modelName = process.env.GEMINI_API_KEY || "gemini-2.5-flash-lite";
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 app.get("/api/health", (_req, res) => {
