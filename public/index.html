@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131a">
+<title>Valmiki AI Master — Kandera</title>
+<style>
+:root{color-scheme:dark;--bg:#10131a;--panel:#191e29;--panel2:#222938;--line:#30394b;--text:#f4f5f8;--muted:#a8b0c0;--accent:#8b78ff;--accent2:#6554d9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.shell{max-width:1050px;margin:auto;min-height:100dvh;display:flex;flex-direction:column;padding:0 18px}
+header{position:sticky;top:0;z-index:5;background:#10131af2;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:16px 0 13px;text-align:center}
+.brand{font-size:clamp(23px,5vw,34px);font-weight:800;letter-spacing:-.8px;margin:0}.brand span{color:#a99cff}.tagline{font-size:10px;letter-spacing:5px;color:#a8b0c0;margin-top:4px}
+.header-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}.pill{font-size:12px;color:#cbd2e0;background:#1a2030;border:1px solid var(--line);border-radius:99px;padding:6px 10px}
+main{flex:1;display:flex;flex-direction:column;width:100%;max-width:850px;margin:0 auto;padding:20px 0 12px}
+.welcome{text-align:center;margin:auto;padding:32px 12px;max-width:600px}.star{font-size:43px;color:#a99cff}.welcome h2{font-size:clamp(24px,4vw,34px);margin:12px 0}.welcome p{color:var(--muted);line-height:1.65}
+.suggestions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:20px}.suggestions button{font-size:12px}
+#messages{display:flex;flex-direction:column;gap:17px;padding-bottom:15px}.message{max-width:90%;border:1px solid var(--line);border-radius:19px;padding:14px 16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}.message.user{align-self:flex-end;background:#30285a;border-color:#4d4383}.message.ai{align-self:flex-start;background:var(--panel)}.role{font-size:11px;font-weight:700;color:#bcb1ff;margin-bottom:6px}.msg-photo{display:block;max-width:min(100%,420px);max-height:340px;object-fit:contain;border-radius:12px;margin:7px 0}
+.controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.composer{position:sticky;bottom:0;background:linear-gradient(180deg,#10131a00,#10131a 18%);padding:12px 0 max(12px,env(safe-area-inset-bottom));z-index:4}
+.preview{display:none;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px;margin-bottom:9px}.preview.show{display:flex}.preview img{width:66px;height:66px;object-fit:cover;border-radius:9px}.preview .file-info{flex:1;min-width:0;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.inputbox{display:flex;align-items:flex-end;gap:7px;border:1px solid #3b455a;background:#191e29;border-radius:23px;padding:9px;box-shadow:0 12px 35px #0003}
+textarea{flex:1;min-width:0;resize:none;max-height:160px;min-height:42px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:10px 8px;line-height:1.4}
+button{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;transition:background .15s}button:hover{background:#303950}button:disabled{opacity:.45;cursor:not-allowed}.iconbtn{width:43px;height:43px;flex:0 0 43px;padding:0;font-size:18px;display:grid;place-items:center}.send{background:var(--accent2);border-color:transparent}.send:hover{background:#7968f0}.active{border-color:#a99cff!important;background:#352e63!important}.subtools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}.subtools button{font-size:12px}.subtools label{font-size:12px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}select{background:#202738;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px}
+#status{font-size:12px;color:var(--muted);text-align:center;margin:10px 0 2px;min-height:18px}.error{color:#ffaaaa!important}.fineprint{font-size:10px;line-height:1.5;text-align:center;color:#8791a5;margin:8px 0 0}
+@media(max-width:540px){.shell{padding:0 11px}.message{max-width:96%;padding:12px}.inputbox{gap:5px;padding:7px}.iconbtn{width:39px;height:39px;flex-basis:39px}.subtools label{margin-left:0}.brand{letter-spacing:-.4px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <h1 class="brand">Valmiki <span>AI Master</span></h1>
+  <div class="tagline">KANDERA</div>
+  <div class="header-tools"><span class="pill">✦ AI Assistant</span><span class="pill" id="connection">सर्वर जाँच रहा है…</span></div>
+</header>
+<main>
+  <section class="welcome" id="welcome">
+    <div class="star">✦</div>
+    <h2>आज मैं आपकी क्या मदद करूँ?</h2>
+    <p>सवाल लिखें या माइक से बोलें। फोटो अपलोड करके उसके बारे में पूछें। AI का जवाब सुनने, रोकने और फिर चलाने के लिए स्पीकर कंट्रोल इस्तेमाल करें।</p>
+    <div class="suggestions">
+      <button data-prompt="इस फोटो का वर्णन करो।">🖼️ फोटो समझाओ</button>
+      <button data-prompt="मुझे कोई नया आइडिया सुझाओ।">💡 आइडिया</button>
+      <button data-prompt="मुझे आसान हिंदी में समझाओ।">📚 समझाओ</button>
+    </div>
+  </section>
+  <section id="messages" aria-live="polite"></section>
+  <div id="status" role="status"></div>
+</main>
+<section class="composer">
+  <div class="preview" id="preview"><img id="previewImg" alt="अपलोड फोटो का पूर्वावलोकन"><div class="file-info" id="fileInfo">फोटो तैयार है</div><button id="removeImage" title="फोटो हटाएँ">✕</button></div>
+  <div class="inputbox">
+    <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+    <button class="iconbtn" id="uploadBtn" title="फोटो अपलोड करें" aria-label="फोटो अपलोड करें">＋</button>
+    <textarea id="prompt" rows="1" placeholder="Valmiki AI से कुछ भी पूछें…" aria-label="सवाल लिखें"></textarea>
+    <button class="iconbtn" id="micBtn" title="बोलकर सवाल पूछें" aria-label="माइक">🎙️</button>
+    <button class="iconbtn send" id="sendBtn" title="भेजें" aria-label="भेजें">➤</button>
+  </div>
+  <div class="subtools">
+    <button id="voiceToggle">🔊 स्पीकर ऑन</button>
+    <button id="pauseBtn">⏸️ Pause</button>
+    <button id="stopBtn">⏹️ Stop</button>
+    <label>आवाज़
+      <select id="voiceRate"><option value="0.8">धीमी</option><option value="1" selected>सामान्य</option><option value="1.2">तेज़</option><option value="1.5">बहुत तेज़</option></select>
+    </label>
+  </div>
+  <p class="fineprint">फोटो विश्लेषण उपलब्ध है। बदली हुई फोटो बनाने के लिए अलग image-editing मॉडल/API जोड़ना आवश्यक है। माइक और स्पीकर की उपलब्धता आपके ब्राउज़र पर निर्भर है।</p>
+</section>
+</div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const messages = $("messages"), promptBox = $("prompt"), sendBtn = $("sendBtn"), micBtn = $("micBtn");
+let history = [], selectedImage = null, voiceOn = true, recognition = null, lastSpoken = "", currentUtterance = null;
+
+function status(text, error=false){ $("status").textContent=text; $("status").classList.toggle("error",error); }
+function hideWelcome(){ const w=$("welcome"); if(w) w.style.display="none"; }
+function stopSpeech(){ if("speechSynthesis" in window) window.speechSynthesis.cancel(); currentUtterance=null; }
+function speak(text, restart=true){
+ if(!voiceOn) return;
+ if(!("speechSynthesis" in window)){status("इस ब्राउज़र में स्पीकर सुविधा उपलब्ध नहीं है।",true);return;}
+ if(restart) stopSpeech();
+ lastSpoken=text;
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang=/[\u0900-\u097F]/.test(text)?"hi-IN":"en-US";
+ u.rate=Number($("voiceRate").value)||1;
+ u.onstart=()=>status("🔊 AI बोल रहा है…");
+ u.onend=()=>{currentUtterance=null;status("जवाब तैयार है");};
+ u.onerror=e=>{currentUtterance=null;if(!["canceled","interrupted"].includes(e.error))status("आवाज़ चलाने में समस्या हुई।",true);};
+ currentUtterance=u;window.speechSynthesis.speak(u);
+}
+function togglePause(){
+ if(!("speechSynthesis" in window)){status("स्पीकर उपलब्ध नहीं है।",true);return;}
+ const s=window.speechSynthesis;
+ if(s.speaking&&!s.paused){s.pause();$("pauseBtn").textContent="▶️ Resume";status("आवाज़ Pause है");}
+ else if(s.paused){s.resume();$("pauseBtn").textContent="⏸️ Pause";status("आवाज़ फिर चल रही है");}
+ else if(lastSpoken){speak(lastSpoken,true);$("pauseBtn").textContent="⏸️ Pause";}
+}
+$("pauseBtn").addEventListener("click",togglePause);
+$("stopBtn").addEventListener("click",()=>{stopSpeech();status("स्पीकर बंद कर दिया गया");$("pauseBtn").textContent="⏸️ Pause";});
+$("voiceToggle").addEventListener("click",()=>{
+ voiceOn=!voiceOn;$("voiceToggle").textContent=voiceOn?"🔊 स्पीकर ऑन":"🔇 स्पीकर ऑफ";
+ if(!voiceOn)stopSpeech();
+});
+function addMessage(role,text,photo=null,error=false){
+ hideWelcome();
+ const el=document.createElement("article");el.className="message "+(role==="user"?"user":"ai");
+ const label=document.createElement("div");label.className="role";label.textContent=role==="user"?"आप":"Valmiki AI Master";el.appendChild(label);
+ if(photo){const img=document.createElement("img");img.className="msg-photo";img.src=photo;img.alt="अपलोड की गई फोटो";el.appendChild(img);}
+ const body=document.createElement("div");body.textContent=text;if(error)body.className="error";el.appendChild(body);
+ if(role==="ai"&&!error){
+  const controls=document.createElement("div");controls.className="controls";
+  const play=document.createElement("button");play.textContent="▶️ जवाब सुनें";play.onclick=()=>speak(text,true);
+  const pause=document.createElement("button");pause.textContent="⏸️ Pause / Resume";pause.onclick=togglePause;
+  const stop=document.createElement("button");stop.textContent="⏹️ Stop";stop.onclick=()=>{stopSpeech();status("आवाज़ रोक दी गई");};
+  controls.append(play,pause,stop);el.appendChild(controls);
+ }
+ messages.appendChild(el);el.scrollIntoView({behavior:"smooth",block:"end"});
+}
+function fileToDataURL(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});}
+$("uploadBtn").onclick=()=>$("imageInput").click();
+$("imageInput").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ if(!file.type.startsWith("image/")){status("कृपया फोटो फ़ाइल चुनें।",true);return;}
+ if(file.size>8*1024*1024){status("फोटो 8 MB से छोटी रखें।",true);e.target.value="";return;}
+ try{
+  selectedImage=await fileToDataURL(file);
+  $("previewImg").src=selectedImage;$("fileInfo").textContent=file.name+" · "+Math.round(file.size/1024)+" KB";
+  $("preview").classList.add("show");status("फोटो अपलोड के लिए तैयार है");
+ }catch(_){status("फोटो पढ़ी नहीं जा सकी।",true);}
+});
+function removeImage(){selectedImage=null;$("imageInput").value="";$("preview").classList.remove("show");$("previewImg").removeAttribute("src");}
+$("removeImage").onclick=removeImage;
+async function sendMessage(){
+ const message=promptBox.value.trim(), photo=selectedImage;
+ if(!message&&!photo){status("सवाल लिखें या फोटो अपलोड करें।",true);return;}
+ promptBox.value="";promptBox.style.height="auto";removeImage();
+ addMessage("user",message||"इस फोटो को देखो और मदद करो।",photo);
+ sendBtn.disabled=true;micBtn.disabled=true;$("uploadBtn").disabled=true;status("AI जवाब तैयार कर रहा है…");
+ try{
+  const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message,history,imageData:photo||"",mimeType:"image/jpeg"})});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(data.error||"सर्वर से जवाब नहीं मिला।");
+  const answer=data.answer||"माफ़ कीजिए, जवाब नहीं मिला।";
+  history.push({role:"user",text:message||"Uploaded an image for analysis"},{role:"model",text:answer});history=history.slice(-10);
+  addMessage("ai",answer);
+  if(data.imageEdited)status("फोटो तैयार है");else status(photo&&/edit|बदल|सुधार|रंग|background/i.test(message)?"फोटो का विश्लेषण मिला; इस सर्वर में image editing API अभी कनेक्ट नहीं है।":"जवाब तैयार है");
+  if(voiceOn)speak(answer,true);
+ }catch(err){addMessage("ai",err.message||"कुछ गड़बड़ हुई।",null,true);status("त्रुटि आई",true);}
+ finally{sendBtn.disabled=false;micBtn.disabled=false;$("uploadBtn").disabled=false;promptBox.focus();}
+}
+sendBtn.addEventListener("click",sendMessage);
+promptBox.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}});
+promptBox.addEventListener("input",()=>{promptBox.style.height="auto";promptBox.style.height=Math.min(promptBox.scrollHeight,160)+"px";});
+document.querySelectorAll("[data-prompt]").forEach(b=>b.onclick=()=>{promptBox.value=b.dataset.prompt;promptBox.focus();});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+ recognition=new SR();recognition.lang="hi-IN";recognition.interimResults=false;recognition.continuous=false;
+ recognition.onstart=()=>{micBtn.classList.add("active");status("🎙️ सुन रहा हूँ…");};
+ recognition.onend=()=>micBtn.classList.remove("active");
+ recognition.onerror=e=>{micBtn.classList.remove("active");status(e.error==="not-allowed"?"माइक की अनुमति दें।":"माइक काम नहीं कर पाया।",true);};
+ recognition.onresult=e=>{promptBox.value=e.results[0][0].transcript;promptBox.dispatchEvent(new Event("input"));sendMessage();};
+ micBtn.onclick=()=>{try{if(micBtn.classList.contains("active"))recognition.stop();else recognition.start();}catch(_){status("माइक व्यस्त है। दोबारा कोशिश करें।",true);}};
+}else{micBtn.onclick=()=>status("इस ब्राउज़र में Speech Recognition उपलब्ध नहीं है। Chrome आज़माएँ।",true);}
+fetch("/api/health").then(r=>r.json()).then(d=>{$("connection").textContent=d.aiConfigured?"● AI सर्वर तैयार":"API key सेट करें";$("connection").style.color=d.aiConfigured?"#86efac":"#fca5a5";}).catch(()=>{$("connection").textContent="सर्वर से कनेक्शन नहीं";});
+window.addEventListener("beforeunload",stopSpeech);
+})();
+</script>
+</body>
+</html>
